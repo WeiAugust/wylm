@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://github.com/WeiAugust/wylm/tree/main/docs
+    about: Check out our documentation for guides and API references
+  - name: Discussions
+    url: https://github.com/WeiAugust/wylm/discussions
+    about: Ask questions and discuss ideas with the community

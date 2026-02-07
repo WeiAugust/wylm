@@ -9,7 +9,7 @@
 
 一个集门户展示、博客创作、摄影作品展示、产品推广于一体的综合性个人网站平台
 
-[在线演示](http://localhost:3000) · [文档](./docs) · [报告问题](https://github.com/your-repo/issues)
+[在线演示](http://localhost:3000) · [文档](./docs) · [报告问题](https://github.com/WeiAugust/wylm/issues)
 
 </div>
 
@@ -41,7 +41,7 @@
 1. **克隆项目**
 
 ```bash
-git clone https://github.com/your-username/wylm.git
+git clone https://github.com/WeiAugust/wylm.git
 cd wylm
 ```
 
@@ -308,7 +308,7 @@ npm run dev
 
 ### Vercel部署
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/wylm)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/WeiAugust/wylm)
 
 ## 🤝 贡献
 
