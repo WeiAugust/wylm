@@ -1,5 +1,5 @@
 # 多阶段构建 Dockerfile
-FROM node:18-alpine AS base
+FROM node:25-alpine AS base
 
 # 安装依赖阶段
 FROM base AS deps
