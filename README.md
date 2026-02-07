@@ -1,36 +1,365 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WYLM 个人网站
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-14+-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue?style=flat-square&logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue?style=flat-square&logo=postgresql)
+![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+
+一个集门户展示、博客创作、摄影作品展示、产品推广于一体的综合性个人网站平台
+
+[在线演示](http://localhost:3000) · [文档](./docs) · [报告问题](https://github.com/your-repo/issues)
+
+</div>
+
+---
+
+## ✨ 特性
+
+- 🎨 **现代化UI** - 基于Tailwind CSS的响应式设计，支持暗黑模式
+- 📝 **博客系统** - Markdown编辑器，分类标签，评论互动
+- 📷 **摄影画廊** - 瀑布流布局，EXIF信息展示，相册管理
+- 🚀 **产品展示** - 产品介绍，演示视频，订阅购买
+- 👥 **用户系统** - 手机号注册登录，角色权限管理
+- 💬 **互动功能** - 评论、点赞、收藏、赞赏
+- 🔐 **安全认证** - JWT + bcrypt密码加密
+- 📊 **后台管理** - 完整的管理后台，数据统计分析
+- 🎯 **SEO优化** - 服务端渲染，友好的URL结构
+- 📱 **移动适配** - 完美支持桌面、平板、手机
+
+## 🚀 快速开始
+
+### 环境要求
+
+- Node.js 18+
+- PostgreSQL 14+
+- npm 或 yarn
+
+### 安装步骤
+
+1. **克隆项目**
+
+```bash
+git clone https://github.com/your-username/wylm.git
+cd wylm
+```
+
+2. **安装依赖**
+
+```bash
+npm install
+```
+
+3. **配置环境变量**
+
+```bash
+cp .env.example .env
+```
+
+编辑 `.env` 文件，配置数据库连接：
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/wylm?schema=public"
+```
+
+4. **初始化数据库**
+
+```bash
+# 生成Prisma Client
+npm run db:generate
+
+# 运行数据库迁移
+npm run db:migrate
+
+# 填充初始数据
+npm run db:seed
+```
+
+5. **启动开发服务器**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. **访问网站**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+打开浏览器访问 [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 默认账号
 
-## Learn More
+数据库初始化后会创建默认管理员账号：
 
-To learn more about Next.js, take a look at the following resources:
+- 手机号: `13800138000`
+- 密码: `Admin123456`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📚 文档
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [产品需求文档 (PRD)](./docs/PRD.md)
+- [API接口文档](./docs/API.md)
+- [开发指南](./docs/DEVELOPMENT.md)
+- [快速启动指南](./QUICKSTART.md)
+- [项目初始化说明](./docs/PROJECT_INIT.md)
 
-## Deploy on Vercel
+## 🛠️ 技术栈
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 前端
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **框架**: Next.js 14+ (App Router)
+- **语言**: TypeScript
+- **样式**: Tailwind CSS
+- **UI组件**: 自定义组件库
+- **状态管理**: React Hooks
+
+### 后端
+
+- **运行时**: Node.js
+- **API**: Next.js API Routes
+- **数据库**: PostgreSQL
+- **ORM**: Prisma
+- **认证**: JWT + bcrypt
+
+### 开发工具
+
+- **代码检查**: ESLint
+- **包管理**: npm
+- **版本控制**: Git
+
+## 📁 项目结构
+
+```
+wylm/
+├── docs/                       # 项目文档
+│   ├── PRD.md                 # 产品需求文档
+│   ├── API.md                 # API接口文档
+│   ├── DEVELOPMENT.md         # 开发指南
+│   └── PROJECT_INIT.md        # 项目初始化说明
+│
+├── prisma/                    # Prisma配置
+│   ├── schema.prisma          # 数据库Schema
+│   └── seed.ts                # 数据库初始化脚本
+│
+├── src/
+│   ├── app/                   # Next.js应用
+│   │   ├── (public)/          # 公开页面
+│   │   ├── (auth)/            # 认证页面
+│   │   ├── (admin)/           # 后台管理
+│   │   └── api/               # API路由
+│   │
+│   ├── components/            # React组件
+│   │   ├── ui/               # UI组件库
+│   │   └── layout/           # 布局组件
+│   │
+│   ├── lib/                  # 工具库
+│   │   ├── prisma/          # Prisma客户端
+│   │   ├── auth/            # 认证相关
+│   │   └── utils/           # 工具函数
+│   │
+│   └── types/               # TypeScript类型定义
+│
+├── .env.example             # 环境变量示例
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## 🎯 功能模块
+
+### 1. 门户主页
+
+- 瀑布流布局展示各个模块
+- 个人介绍、博客精选、摄影作品、产品推广
+- 响应式设计，支持暗黑模式
+
+### 2. 博客系统
+
+- Markdown编辑器
+- 分类、标签、搜索功能
+- 评论、点赞、赞赏功能
+- 热门文章推荐
+
+### 3. 摄影画廊
+
+- 瀑布流/网格布局
+- EXIF信息展示
+- 相册管理
+- 图片下载功能
+
+### 4. 产品展示
+
+- 产品介绍和演示
+- 订阅价格和购买流程
+- 使用案例展示
+
+### 5. 用户系统
+
+- 手机号注册登录
+- 用户中心
+- 角色权限管理（RBAC）
+
+### 6. 后台管理
+
+- 仪表盘统计
+- 内容管理（博客、摄影、产品）
+- 用户管理
+- 系统配置
+
+## 🔧 开发命令
+
+```bash
+# 开发
+npm run dev              # 启动开发服务器
+npm run build            # 构建生产版本
+npm start                # 启动生产服务器
+
+# 数据库
+npm run db:generate      # 生成Prisma Client
+npm run db:migrate       # 运行数据库迁移
+npm run db:seed          # 填充初始数据
+npm run db:studio        # 打开Prisma Studio
+npm run db:reset         # 重置数据库
+
+# 代码质量
+npm run lint             # 运行ESLint检查
+```
+
+## 🌟 核心功能
+
+### 用户认证
+
+- ✅ 手机号注册
+- ✅ 密码登录
+- ✅ 验证码登录
+- ✅ JWT Token认证
+- ⏳ 第三方登录（微信、QQ、GitHub）
+
+### 内容管理
+
+- ✅ 博客文章CRUD
+- ✅ 摄影作品CRUD
+- ✅ 产品管理CRUD
+- ✅ 分类标签管理
+- ✅ 评论系统
+
+### 互动功能
+
+- ✅ 点赞功能
+- ✅ 收藏功能
+- ✅ 评论功能
+- ⏳ 赞赏功能（支付集成）
+
+### 后台管理
+
+- ✅ 仪表盘统计
+- ✅ 用户管理
+- ✅ 内容管理
+- ✅ 系统设置
+- ⏳ 数据分析
+
+## 📊 数据库设计
+
+项目使用PostgreSQL数据库，包含以下主要数据表：
+
+- **用户系统**: users, roles, permissions
+- **博客系统**: posts, categories, tags
+- **摄影系统**: photos, albums
+- **产品系统**: products, product_plans
+- **互动系统**: comments, likes, favorites, donations
+- **订单系统**: orders, payments
+- **系统配置**: site_config, page_modules
+
+详细的数据库设计请查看 [prisma/schema.prisma](./prisma/schema.prisma)
+
+## 🔐 安全特性
+
+- JWT Token认证
+- bcrypt密码加密
+- SQL注入防护
+- XSS攻击防护
+- CSRF防护
+- 接口限流
+- 敏感信息脱敏
+
+## 🚀 部署
+
+### Docker部署（推荐）
+
+#### 快速开始
+
+```bash
+# 一键部署（生产环境）
+./deploy.sh
+
+# 或手动部署
+docker-compose up -d
+```
+
+#### 开发环境
+
+```bash
+# 启动开发数据库
+./dev.sh
+
+# 启动开发服务器
+npm run dev
+```
+
+详细文档: [Docker 部署指南](./DOCKER_README.md) | [完整文档](./docs/DOCKER_DEPLOYMENT.md)
+
+### Vercel部署
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/wylm)
+
+## 🤝 贡献
+
+欢迎提交Issue和Pull Request！
+
+1. Fork本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交Pull Request
+
+## 📝 开发计划
+
+- [x] 项目初始化
+- [x] 数据库设计
+- [x] 基础认证系统
+- [x] 门户主页
+- [x] 博客系统（前台）
+- [x] 摄影画廊（前台）
+- [x] 产品展示（前台）
+- [x] 后台管理框架
+- [ ] 博客管理（后台）
+- [ ] 摄影管理（后台）
+- [ ] 产品管理（后台）
+- [ ] 支付集成
+- [ ] 性能优化
+- [ ] 部署上线
+
+## 📄 许可证
+
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 👥 联系方式
+
+- 项目负责人: [待填写]
+- 邮箱: [待填写]
+- GitHub: [待填写]
+
+## 🙏 致谢
+
+- [Next.js](https://nextjs.org/)
+- [Prisma](https://www.prisma.io/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+
+---
+
+<div align="center">
+
+**[⬆ 回到顶部](#wylm-个人网站)**
+
+Made with ❤️ by WYLM Team
+
+</div>

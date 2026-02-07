@@ -1,0 +1,8 @@
+# 每天凌晨 2 点执行数据库备份
+0 2 * * * cd /path/to/wylm && ./scripts/backup.sh >> ./logs/backup.log 2>&1
+
+# 每 5 分钟执行一次健康检查
+*/5 * * * * cd /path/to/wylm && ./scripts/monitor.sh
+
+# 每周日凌晨 3 点清理 Docker 未使用的资源
+0 3 * * 0 docker system prune -f >> /var/log/docker-cleanup.log 2>&1

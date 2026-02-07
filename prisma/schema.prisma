@@ -1,0 +1,636 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// 用户相关表
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  phone         String    @unique
+  password      String
+  nickname      String?
+  avatar        String?
+  bio           String?
+  email         String?   @unique
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  status        UserStatus @default(ACTIVE)
+
+  // 关联
+  roles         UserRole[]
+  posts         Post[]
+  photos        Photo[]
+  comments      Comment[]
+  likes         Like[]
+  favorites     Favorite[]
+  donations     Donation[]
+  orders        Order[]
+
+  @@index([phone])
+  @@index([email])
+  @@map("users")
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  code        String   @unique
+  description String?
+  module      String
+  createdAt   DateTime @default(now())
+
+  // 关联
+  roles RolePermission[]
+
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// ============================================
+// 博客相关表
+// ============================================
+
+model Post {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  content     String      @db.Text
+  excerpt     String?
+  coverImage  String?
+  authorId    String
+  categoryId  String?
+  status      PostStatus  @default(DRAFT)
+  isPinned    Boolean     @default(false)
+  viewCount   Int         @default(0)
+  likeCount   Int         @default(0)
+  commentCount Int        @default(0)
+  publishedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // 关联
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags     PostTag[]
+  comments Comment[]
+  likes    Like[]
+  favorites Favorite[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([slug])
+  @@map("posts")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  icon        String?
+  color       String?
+  sortOrder   Int      @default(0)
+  type        CategoryType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  posts  Post[]
+  photos Photo[]
+
+  @@index([type])
+  @@index([sortOrder])
+  @@map("categories")
+}
+
+enum CategoryType {
+  POST
+  PHOTO
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  color     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // 关联
+  posts  PostTag[]
+  photos PhotoTag[]
+
+  @@map("tags")
+}
+
+model PostTag {
+  id        String   @id @default(cuid())
+  postId    String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, tagId])
+  @@index([postId])
+  @@index([tagId])
+  @@map("post_tags")
+}
+
+// ============================================
+// 摄影作品相关表
+// ============================================
+
+model Photo {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  imageUrl    String
+  thumbnailUrl String?
+  width       Int?
+  height      Int?
+  fileSize    Int?
+  authorId    String
+  categoryId  String?
+  location    String?
+  takenAt     DateTime?
+
+  // EXIF信息
+  camera      String?
+  lens        String?
+  aperture    String?
+  shutter     String?
+  iso         String?
+  focalLength String?
+
+  viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
+  downloadCount Int    @default(0)
+  allowDownload Boolean @default(false)
+  sortOrder   Int      @default(0)
+  status      PhotoStatus @default(PUBLISHED)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  author   User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags     PhotoTag[]
+  albums   PhotoAlbum[]
+  comments Comment[]
+  likes    Like[]
+  favorites Favorite[]
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([sortOrder])
+  @@map("photos")
+}
+
+enum PhotoStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model PhotoTag {
+  id        String   @id @default(cuid())
+  photoId   String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  tag   Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([photoId, tagId])
+  @@index([photoId])
+  @@index([tagId])
+  @@map("photo_tags")
+}
+
+model Album {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  coverImage  String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  photos PhotoAlbum[]
+
+  @@index([sortOrder])
+  @@map("albums")
+}
+
+model PhotoAlbum {
+  id        String   @id @default(cuid())
+  photoId   String
+  albumId   String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@unique([photoId, albumId])
+  @@index([photoId])
+  @@index([albumId])
+  @@index([sortOrder])
+  @@map("photo_albums")
+}
+
+// ============================================
+// 产品相关表
+// ============================================
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String        @db.Text
+  features    String        @db.Text
+  coverImage  String?
+  demoVideo   String?
+  demoImages  String[]
+  useCases    String?       @db.Text
+  techStack   String?       @db.Text
+  status      ProductStatus @default(DRAFT)
+  sortOrder   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // 关联
+  plans  ProductPlan[]
+  orders Order[]
+
+  @@index([status])
+  @@index([sortOrder])
+  @@map("products")
+}
+
+enum ProductStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model ProductPlan {
+  id          String   @id @default(cuid())
+  productId   String
+  name        String
+  description String?  @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  currency    String   @default("CNY")
+  duration    Int?
+  durationUnit String?
+  features    String   @db.Text
+  isPopular   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orders  Order[]
+
+  @@index([productId])
+  @@index([sortOrder])
+  @@map("product_plans")
+}
+
+// ============================================
+// 互动相关表
+// ============================================
+
+model Comment {
+  id          String      @id @default(cuid())
+  content     String      @db.Text
+  authorId    String
+  targetType  CommentTarget
+  targetId    String
+  parentId    String?
+  status      CommentStatus @default(PENDING)
+  likeCount   Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // 关联
+  author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent  Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+  post    Post?    @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  photo   Photo?   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@index([authorId])
+  @@index([targetType, targetId])
+  @@index([parentId])
+  @@index([status])
+  @@map("comments")
+}
+
+enum CommentTarget {
+  POST
+  PHOTO
+  PRODUCT
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Like {
+  id         String     @id @default(cuid())
+  userId     String
+  targetType LikeTarget
+  targetId   String
+  createdAt  DateTime   @default(now())
+
+  // 关联
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@map("likes")
+}
+
+enum LikeTarget {
+  POST
+  PHOTO
+  COMMENT
+}
+
+model Favorite {
+  id         String         @id @default(cuid())
+  userId     String
+  targetType FavoriteTarget
+  targetId   String
+  createdAt  DateTime       @default(now())
+
+  // 关联
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@map("favorites")
+}
+
+enum FavoriteTarget {
+  POST
+  PHOTO
+}
+
+model Donation {
+  id            String         @id @default(cuid())
+  userId        String
+  targetType    DonationTarget
+  targetId      String
+  amount        Decimal        @db.Decimal(10, 2)
+  currency      String         @default("CNY")
+  paymentMethod String
+  message       String?
+  status        DonationStatus @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // 关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([targetType, targetId])
+  @@index([status])
+  @@map("donations")
+}
+
+enum DonationTarget {
+  POST
+  PHOTO
+  SITE
+}
+
+enum DonationStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// 订单相关表
+// ============================================
+
+model Order {
+  id            String      @id @default(cuid())
+  orderNo       String      @unique
+  userId        String
+  productId     String
+  planId        String
+  amount        Decimal     @db.Decimal(10, 2)
+  currency      String      @default("CNY")
+  status        OrderStatus @default(PENDING)
+  paymentMethod String?
+  paidAt        DateTime?
+  expiredAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // 关联
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  plan    ProductPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  payment Payment?
+
+  @@index([userId])
+  @@index([productId])
+  @@index([status])
+  @@index([orderNo])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+  EXPIRED
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String        @unique
+  paymentNo       String        @unique
+  paymentMethod   String
+  amount          Decimal       @db.Decimal(10, 2)
+  currency        String        @default("CNY")
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?
+  paymentData     String?       @db.Text
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // 关联
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([paymentNo])
+  @@index([status])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// 系统配置相关表
+// ============================================
+
+model SiteConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  type      String
+  group     String
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([group])
+  @@map("site_config")
+}
+
+model PageModule {
+  id        String   @id @default(cuid())
+  page      String
+  moduleKey String
+  title     String
+  content   String?  @db.Text
+  config    String?  @db.Text
+  isVisible Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([page, moduleKey])
+  @@index([page])
+  @@index([sortOrder])
+  @@map("page_modules")
+}
+
+model OperationLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  module     String
+  targetType String?
+  targetId   String?
+  ip         String?
+  userAgent  String?
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([module])
+  @@index([createdAt])
+  @@map("operation_logs")
+}
+
+model Statistic {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  metric    String
+  value     Int
+  metadata  String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@unique([date, metric])
+  @@index([date])
+  @@index([metric])
+  @@map("statistics")
+}
