@@ -43,3 +43,17 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# temporary documentation files
+COMPLETION_REPORT.md
+DELIVERY_CHECKLIST.md
+DOCKER_CHECKLIST.md
+DOCKER_FINAL_SUMMARY.md
+DOCKER_README.md
+DOCKER_SETUP_COMPLETE.md
+DOCKER_STRUCTURE.md
+FILE_LIST.md
+FINAL_REPORT.md
+NEXT_STEPS.md
+README_DOCKER.txt
+START_DOCKER.md
