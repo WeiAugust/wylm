@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ============================================
@@ -392,8 +391,8 @@ model Comment {
   author  User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   parent  Comment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies Comment[] @relation("CommentReplies")
-  post    Post?    @relation(fields: [targetId], references: [id], onDelete: Cascade)
-  photo   Photo?   @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "comment_post_fkey")
+  photo   Photo?   @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "comment_photo_fkey")
 
   @@index([authorId])
   @@index([targetType, targetId])
@@ -423,8 +422,8 @@ model Like {
 
   // 关联
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade)
-  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "like_post_fkey")
+  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "like_photo_fkey")
 
   @@unique([userId, targetType, targetId])
   @@index([userId])
@@ -447,8 +446,8 @@ model Favorite {
 
   // 关联
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade)
-  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade)
+  post  Post?  @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "favorite_post_fkey")
+  photo Photo? @relation(fields: [targetId], references: [id], onDelete: Cascade, map: "favorite_photo_fkey")
 
   @@unique([userId, targetType, targetId])
   @@index([userId])

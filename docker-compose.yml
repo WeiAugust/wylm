@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   # PostgreSQL 数据库
   postgres:
-    image: postgres:14-alpine
+    image: postgres:latest
     container_name: wylm-postgres
     restart: unless-stopped
     environment:
@@ -11,7 +9,7 @@ services:
       POSTGRES_PASSWORD: wylm_password
       POSTGRES_DB: wylm
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
     ports:
       - "5432:5432"
     networks:

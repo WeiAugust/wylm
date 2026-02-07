@@ -1,7 +1,13 @@
 import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { Pool } from 'pg'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+})
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('开始初始化数据库...')
@@ -249,7 +255,14 @@ async function main() {
     await prisma.category.upsert({
       where: { slug: cat.slug },
       update: {},
-      create: cat as any,
+      create: {
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description,
+        icon: cat.icon,
+        color: cat.color,
+        type: cat.type as 'POST' | 'PHOTO',
+      },
     })
   }
 
@@ -264,7 +277,14 @@ async function main() {
     await prisma.category.upsert({
       where: { slug: cat.slug },
       update: {},
-      create: cat as any,
+      create: {
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description,
+        icon: cat.icon,
+        color: cat.color,
+        type: cat.type as 'POST' | 'PHOTO',
+      },
     })
   }
 
